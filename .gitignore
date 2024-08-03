@@ -1,0 +1,50 @@
+
+### **.gitignore**
+
+```gitignore
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+venv/
+*.env
+
+# Django
+db.sqlite3
+/static/
+media/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# IDEs and Editors
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.project
+*.classpath
+*.settings/
+
+# Coverage reports
+.coverage
+*.cover
+
+# Test output
+nosetests.xml
+coverage.xml
+*.cover
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+build/
+dist/
+*.egg-info
+
