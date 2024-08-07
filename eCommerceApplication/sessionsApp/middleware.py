@@ -12,6 +12,9 @@ class UserSessionMiddleware(MiddlewareMixin):
             try:
                 # Validate the session token
                 user_session = UserSession.objects.get(session_key=session_key)
+                if user_session.is_expired():
+                    user_session.delete()
+                    return JsonResponse({'error': 'Session token expired'}, status=401)
                 request.user = user_session.user
             except UserSession.DoesNotExist:
                 return JsonResponse({'error': 'Invalid session token'}, status=401)
