@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Custom Middleware
-    'UserSessionMiddleware',
+    'sessionsApp.middleware.UserSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'eCommerceApplication.urls'

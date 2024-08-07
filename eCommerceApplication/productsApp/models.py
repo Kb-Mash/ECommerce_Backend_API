@@ -45,7 +45,7 @@ class Product(models.Model):
     manufacturer = models.CharField(max_length=255)
     stock = models.IntegerField()
     category = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='product_images/')
+    #image = models.ImageField(upload_to='product_images/') install Pillow
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
 
     def __str__(self):
