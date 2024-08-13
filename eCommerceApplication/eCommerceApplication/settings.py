@@ -38,12 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Custom Apps
-    'usersApp',
-    'productsApp',
-    'ordersApp',
-    'addressesApp',
-    'sessionsApp',
-    'authenticationApp',
+    'customer',
+    'product',
+    'order',
+    'address',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -54,13 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Custom Middleware
-    'sessionsApp.middleware.UserSessionMiddleware',
 ]
-
-# Session Age
-SESSION_COOKIE_AGE = 3600  # Session age in seconds (1 hour)
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 ROOT_URLCONF = 'eCommerceApplication.urls'
 

@@ -1,5 +1,5 @@
 from django.db import models
-from usersApp.models import Customer
+from customer.models import Customer
 
 
 class Address(models.Model):
