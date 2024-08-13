@@ -27,7 +27,7 @@ def login_view(request):
         return Response({'message': 'Login successful'})
     return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-@api_view['POST'])
+@api_view(['POST'])
 def logout_view(request):
     logout(request)
     return Response({'message': 'Logout successful'})

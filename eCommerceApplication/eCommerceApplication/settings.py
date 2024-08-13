@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'order',
     'address',
     'authentication',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
