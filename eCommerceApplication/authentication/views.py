@@ -13,20 +13,22 @@ class RegisterView(generics.CreateAPIView):
         # Handle registration logic
         return super().post(request, *args, **kwargs)
 
+
 class LoginView(APIView):
     def post(self, request, *args, **kwargs):
         # Handle login logic
-        email = request.data.get('email')
+        username = request.data.get('username')
         password = request.data.get('password')
 
-        user = authenticate(email=email, password=password)
+        user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return Response({'message': 'Login successful'})
+            return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class LogoutView(APIView):
     def post(self, request, *args, **kwargs):
         # Handle logout logic
         logout(request)
-        return Response({'message': 'Logout successful'})
+        return Response({'message': 'Logout successful'}, status.HTTP_200_OK)
