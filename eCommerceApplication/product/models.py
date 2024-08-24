@@ -1,28 +1,5 @@
 from django.db import models
-from django.conf import settings
-
-
-class Seller(models.Model):
-    """
-    Represents a seller in the system, linked to a user account.
-
-    Attributes:
-        user (OneToOneField): The user account associated with this seller.
-        phone_number (CharField): The phone number of the seller.
-        created_at (DateTimeField): The timestamp when the customer record was created. 
-    """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=50, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        """
-        Returns a string representation of the seller, including user details and phone number.
-
-        Returns:
-            str: A formatted string with seller details.
-        """
-        return f'{self.user.first_name} {self.user.last_name} {self.user.email} {self.phone_number}'
+from user.models import Seller
 
 
 class Product(models.Model):
@@ -54,4 +31,3 @@ class Product(models.Model):
             str: The name of the product.
         """
         return self.product_name
-
