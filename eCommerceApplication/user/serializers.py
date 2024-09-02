@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Customer, Seller
+from .models import CustomUser
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -18,26 +18,3 @@ class CustomUserSerializer(serializers.ModelSerializer):
             is_seller=validated_data.get('is_seller', False)
         )
         return user
-
-
-class CustomerSerializer(serializers.ModelSerializer):
-    # user = CustomUserSerializer() remove nested serializer for view-handled user creation
-
-    class Meta:
-        model = Customer
-        fields = '__all__'
-
-    def create(self, validated_data):
-        #user_data = validated_data.pop('user') remove nested user creation logic
-        #user = CustomUserSerializer.create(CustomUserSerializer(), validated_data=user_data)
-        customer = Customer.objects.create(**validated_data)
-        return customer
-
-class SellerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Seller
-        fields = '__all__'
-
-    def create(self, validated_data):
-        seller = Seller.objects.create(**validated_data)
-        return seller

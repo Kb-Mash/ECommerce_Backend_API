@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # apps
     'user',
+    'customer',
+    'seller',
     'product',
     'order',
     'jwt_auth',

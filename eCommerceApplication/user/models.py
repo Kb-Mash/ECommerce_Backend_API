@@ -25,6 +25,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
+
 class CustomUser(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
@@ -38,23 +39,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
-
-
-# Customer
-class Customer(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=50, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    payment_token = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.user.email} - Customer'
-
-# Seller
-class Seller(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=50, blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.user.email} - Seller'

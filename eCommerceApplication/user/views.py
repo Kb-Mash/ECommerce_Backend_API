@@ -1,9 +1,10 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
-from .serializers import CustomUserSerializer, CustomerSerializer, SellerSerializer
-# from rest_framework_simplejwt.tokens import RefreshToken - To-Do
+from .serializers import CustomUserSerializer
+from customer.serializers import CustomerSerializer
+from seller.serializers import SellerSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class UserRegistrationView(APIView):
@@ -15,7 +16,8 @@ class UserRegistrationView(APIView):
             user = user_serializer.save()
 
             if user.is_customer:
-                customer_data = {'user': user.id, **request.data}
+                customer_data = request.data.copy()
+                customer_data['user'] = user.id
                 customer_serializer = CustomerSerializer(data=customer_data)
                 if customer_serializer.is_valid():
                     customer_serializer.save()
@@ -23,7 +25,8 @@ class UserRegistrationView(APIView):
                 return Response(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             elif user.is_seller:
-                seller_data = {'user': user.id, **request.data}
+                seller_data = request.data.copy()
+                seller_data['user'] = user.id
                 seller_serializer = SellerSerializer(data=seller_data)
                 if seller_serializer.is_valid():
                     seller_serializer.save()
@@ -33,36 +36,18 @@ class UserRegistrationView(APIView):
             return Response({"error": "Role must be specified."}, status=status.HTTP_400_BAD_REQUEST)
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-"""
-class UserLoginView(APIView):
-    def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
 
-        if not email or not password:
-            return Response({'error': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
 
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            # Generate JWT token
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            refresh_token = str(refresh)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.user
 
-            serializer = CustomUserSerializer(user)
+        user_serializer = CustomUserSerializer(user)
+        data = response.data
+        data['message'] = 'You have logged in successfully.'
+        data['user'] = user_serializer.data
 
-            # Return the tokens and user data
-            return Response({
-                'access_token': access_token,
-                'refresh_token': refresh_token,
-                'user': serializer.data
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-class UserLogoutView(APIView):
-    def post(self, request):
-        logout(request)
-        return Response({'message': 'Successfully logged out'}, status=status.HTTP_200_OK)
-"""
+        return Response(data, status=status.HTTP_200_OK)
