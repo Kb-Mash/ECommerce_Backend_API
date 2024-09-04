@@ -3,11 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Customer, Address
+from .serializers import AddressSerializer
 from user.models import CustomUser
 from user.serializers import CustomUserSerializer
-from order.models import Order
 from .features_serializers import CurrentCustomerSerializer, CustomerUpdateSerializer, PasswordUpdateSerializer
-from rest_framework.generics import RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 
 
 ### Customer Views ###
@@ -49,3 +49,41 @@ class PasswordUpdateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ### Address Views ###
+
+# Create Address
+class AddressCreateView(CreateAPIView):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        customer = Customer.objects.get(user=self.request.user)
+        serializer.save(customer=customer)
+
+# Get current customer's address
+class AddressRetrieveView(RetrieveAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        customer = Customer.objects.get(user=self.request.user)
+        return Address.objects.filter(customer=customer)
+
+# Update current customer's address
+class AddressUpdateView(UpdateAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        customer = Customer.objects.get(user=self.request.user)
+        return Address.objects.filter(customer=customer)
+
+# Delete current customer's address
+class AddressDeleteView(DestroyAPIView):
+    queryset = Address.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        customer = Customer.objects.get(user=self.request.user)
+        return Address.objects.filter(customer=customer)
