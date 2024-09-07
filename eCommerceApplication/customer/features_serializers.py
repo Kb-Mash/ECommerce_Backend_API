@@ -36,20 +36,22 @@ class CustomerUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 class PasswordUpdateSerializer(serializers.Serializer):
-    old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True)
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
 
     def validate_old_password(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
-            raise serializers.ValidationError("Old password is not correct.")
+            raise serializers.ValidationError("Old password is incorrect.")
+        return value
+
+    def validate_new_password(self, value):
+        # Add additional validation for the new password
         return value
 
     def save(self):
         user = self.context['request'].user
-        #old_password = self.validated_data['old_password']
         new_password = self.validated_data['new_password']
-        
         user.set_password(new_password)
         user.save()
         
