@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('order', '0001_initial'),
         ('product', '0001_initial'),
-        ('user', '0002_customuser_is_customer_customuser_is_seller_and_more'),
+        ('authentication', '0002_customuser_is_customer_customuser_is_seller_and_more'),
     ]
 
     operations = [
@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='order',
             name='customer',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.customer'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='authentication.customer'),
         ),
     ]

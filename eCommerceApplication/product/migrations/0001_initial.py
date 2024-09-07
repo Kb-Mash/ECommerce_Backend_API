@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user', '0002_customuser_is_customer_customuser_is_seller_and_more'),
+        ('authentication', '0002_customuser_is_customer_customuser_is_seller_and_more'),
     ]
 
     operations = [
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('manufacturer', models.CharField(max_length=255)),
                 ('stock', models.IntegerField()),
                 ('category', models.CharField(max_length=255)),
-                ('seller', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.seller')),
+                ('seller', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='authentication.seller')),
             ],
         ),
     ]

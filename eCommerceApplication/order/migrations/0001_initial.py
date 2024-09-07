@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user', '0002_customuser_is_customer_customuser_is_seller_and_more'),
+        ('authentication', '0002_customuser_is_customer_customuser_is_seller_and_more'),
     ]
 
     operations = [
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('province', models.CharField(max_length=255)),
                 ('country', models.CharField(max_length=255)),
                 ('postal_code', models.CharField(max_length=20)),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.customer')),
+                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='authentication.customer')),
             ],
         ),
         migrations.CreateModel(
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('cart_price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('customer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='user.customer')),
+                ('customer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='authentication.customer')),
             ],
         ),
         migrations.CreateModel(

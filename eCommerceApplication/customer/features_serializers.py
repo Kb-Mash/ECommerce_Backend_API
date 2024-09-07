@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Customer, Address
-from user.serializers import CustomUserSerializer
+from authentication.serializers import CustomUserSerializer
 from django.contrib.auth import update_session_auth_hash
 
 

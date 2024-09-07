@@ -1,11 +1,10 @@
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Customer, Address
 from .serializers import AddressSerializer
-from user.models import CustomUser
-from user.serializers import CustomUserSerializer
+from authentication.models import CustomUser
+from authentication.serializers import CustomUserSerializer
 from .features_serializers import CurrentCustomerSerializer, CustomerUpdateSerializer, PasswordUpdateSerializer
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from .utils import get_customer_instance
@@ -19,17 +18,11 @@ class CurrentCustomerView(RetrieveAPIView):
     serializer_class = CurrentCustomerSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        try:
-            return Customer.objects.get(user=self.request.user)
-        except Customer.DoesNotExist:
-            return None
-
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance, err_response = get_customer_instance(self.request)
 
-        if instance is None:
-            return not_found_response("Customer does not exist")
+        if err_response:
+            return err_response
 
         serializer = self.get_serializer(instance)
         return success_response("Customer data retrieved successfully", data=serializer.data)
@@ -39,17 +32,11 @@ class CustomerUpdateView(UpdateAPIView):
     serializer_class = CustomerUpdateSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        try:
-            return Customer.objects.get(user=self.request.user)
-        except Customer.DoesNotExist:
-            return None
-
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance, err_response = get_customer_instance(self.request)
 
-        if instance is None:
-            return not_found_response("Customer does not exist")
+        if err_response:
+            return err_response
 
         # PATCH request for partial updates
         partial = kwargs.pop('partial', False)
@@ -65,17 +52,11 @@ class CustomerUpdateView(UpdateAPIView):
 class CustomerDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        try:
-            return Customer.objects.get(user=self.request.user)
-        except Customer.DoesNotExist:
-            return None
-
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance, err_response = get_customer_instance(self.request)
 
-        if instance is None:
-            return not_found_response("Customer does not exist")
+        if err_response:
+            return err_response
 
         # To-Do: implement soft deletion
         self.perform_destroy(instance)
@@ -104,19 +85,17 @@ class AddressCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        customer, err_response = get_customer_instance(request)
+        customer, err_response = get_customer_instance(self.request)
 
         if err_response:
             return err_response
 
-        # Bind customer data to the request
         data = request.data.copy()
-        data['customer'] = customer.id
 
         serializer = self.get_serializer(data=data, context={'request': request})
 
         if serializer.is_valid():
-            self.perform_create(serializer)
+            serializer.save(customer=customer)
             return success_response("Address created successfully", data=serializer.data)
 
         return error_response("Invalid data provided", errors=serializer.errors)
