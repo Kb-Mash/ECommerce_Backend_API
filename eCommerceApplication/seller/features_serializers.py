@@ -1,0 +1,59 @@
+from rest_framework import serializers
+from .models import Seller, Product
+from authentication.serializers import CustomUserSerializer
+from django.contrib.auth import update_session_auth_hash
+
+
+class CurrentSellerSerializer(serializers.ModelSerializer):
+    user = CustomUserSerializer(read_only=True)
+
+    class Meta:
+        model = Seller
+        fields = ['user', 'id', 'phone_number', 'created_at']
+
+class SellerUpdateSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='user.email', required=False)
+    phone_number = serializers.CharField(required=False)
+
+    class Meta:
+        model = Seller
+        fields = ['email', 'phone_number']
+
+    def update(self, instance, validated_data):
+        # Handle update to User model's email
+        user_data = validated_data.pop('user', {})
+        email = user_data.get('email')
+        
+        if email:
+            # Access and update the email directly on the user instance
+            instance.user.email = email
+            instance.user.save()
+
+        # Handle updates to the Seller model
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.save()
+
+        return instance
+
+class PasswordUpdateSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect.")
+        return value
+
+    def validate_new_password(self, value):
+        # Add additional validation for the new password
+        return value
+
+    def save(self):
+        user = self.context['request'].user
+        new_password = self.validated_data['new_password']
+        user.set_password(new_password)
+        user.save()
+        
+        # Keep the user logged in after password change
+        update_session_auth_hash(self.context['request'], user)

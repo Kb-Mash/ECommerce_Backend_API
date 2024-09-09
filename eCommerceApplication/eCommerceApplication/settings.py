@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'authentication',
     'customer',
     'seller',
-    'product',
     'order',
     'jwt_auth',
     'rest_framework',
@@ -109,7 +108,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': BASE_DIR / 'test_db.sqlite3', # separate database for tests
+        #'NAME': BASE_DIR / 'test_db.sqlite3', # separate database for tests
     }
 }
 
