@@ -35,7 +35,21 @@ class Cart(models.Model):
         cart_price (DecimalField): The total price of the cart.
     """
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
-    cart_price = models.DecimalField(max_digits=10, decimal_places=2)
+    cart_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def update_cart_price(self):
+        """
+        Updates the cart_price by calculating the sum of all cart item prices.
+        """
+        
+        """
+        total_price = 0
+        for item in self.cartitem_set.all():
+            total_price += item.product.price * item.quantity
+        """
+        total_price = sum(item.get_total_price() for item in self.cartitem_set.all())
+        self.cart_price = total_price
+        self.save()
 
     def __str__(self):
         """
@@ -57,6 +71,26 @@ class CartItem(models.Model):
     quantity = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+
+    def get_total_price(self):
+        """
+        Calculates the total price of this cart item (product price * quantity).
+        """
+        return self.product.price * self.quantity
+
+    def save(self, *args, **kwargs):
+        """
+        Overrides the save method to update the cart's total price whenever a cart item is added or modified.
+        """
+        super().save(*args, **kwargs)
+        self.cart.update_cart_price()
+
+    def delete(self, *args, **kwargs):
+    """
+    Overrides the delete method to update the cart's total price when a cart item is removed.
+    """
+        super().delete(*args, **kwargs)
+        self.cart.update_cart_price()
 
     def __str__(self):
         """
